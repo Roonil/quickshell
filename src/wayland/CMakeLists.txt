@@ -142,6 +142,9 @@ list(APPEND WAYLAND_MODULES Quickshell.Wayland._IdleNotify)
 add_subdirectory(shortcuts_inhibit)
 list(APPEND WAYLAND_MODULES Quickshell.Wayland._ShortcutsInhibitor)
 
+add_subdirectory(dmabuf_surface)
+list(APPEND WAYLAND_MODULES Quickshell.Wayland._DMABufSurface)
+
 add_subdirectory(windowmanager)
 
 # widgets for qmenu

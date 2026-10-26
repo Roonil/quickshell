@@ -67,6 +67,11 @@ toWaylandKeyboardFocus(const WlrKeyboardFocus::Enum& focus) noexcept {
 	return QtWayland::zwlr_layer_surface_v1::keyboard_interactivity_none;
 }
 
+[[nodiscard]] qint32 nativeExclusiveZone(qint32 zone, const QWindow* window) {
+	if (zone < 0) return zone;
+	return QHighDpi::toNativePixels(zone, window);
+}
+
 [[nodiscard]] QSize constrainedSize(const Anchors& anchors, const QSize& size) noexcept {
 	return QSize(
 	    anchors.horizontalConstraint() ? 0 : std::max(1, size.width()),
@@ -173,7 +178,7 @@ LayerSurface::LayerSurface(LayerShellIntegration* shell, QtWaylandClient::QWayla
 	    QHighDpi::toNativePixels(s.margins.bottom, qwindow),
 	    QHighDpi::toNativePixels(s.margins.left, qwindow)
 	);
-	this->set_exclusive_zone(QHighDpi::toNativePixels(s.exclusiveZone, qwindow));
+	this->set_exclusive_zone(nativeExclusiveZone(s.exclusiveZone, qwindow));
 	this->set_keyboard_interactivity(toWaylandKeyboardFocus(s.keyboardFocus));
 
 	this->bridge->surface = this;
@@ -242,7 +247,7 @@ void LayerSurface::commit() {
 	}
 
 	if (p.exclusiveZone != c.exclusiveZone) {
-		this->set_exclusive_zone(QHighDpi::toNativePixels(p.exclusiveZone, this->qwindow()));
+		this->set_exclusive_zone(nativeExclusiveZone(p.exclusiveZone, this->qwindow()));
 	}
 
 	if (p.keyboardFocus != c.keyboardFocus) {
